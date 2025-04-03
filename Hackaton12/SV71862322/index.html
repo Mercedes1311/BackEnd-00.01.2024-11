@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Compras</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { max-width: 400px; margin: auto; }
+        input, button { margin: 5px; padding: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Lista de Compras</h1>
+    <div class="container">
+        <input type="text" id="nombre" placeholder="Nombre">
+        <input type="text" id="descripcion" placeholder="Descripción">
+        <input type="date" id="fecha">
+        <button onclick="agregarLista()">Agregar</button>
+        <h2>Pendientes</h2>
+        <ul id="pendientes"></ul>
+        <h2>Completados</h2>
+        <ul id="completados"></ul>
+    </div>
+    <script>
+        function agregarLista() {
+            const nombre = document.getElementById('nombre').value;
+            const descripcion = document.getElementById('descripcion').value;
+            const fecha = document.getElementById('fecha').value;
+            fetch('/crear-lista', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Nombre: nombre, Descripcion: descripcion, Fecha: fecha, EsCompletado: false })
+            }).then(() => cargarListas());
+        }
+        function cargarListas() {
+            fetch('/pendientes')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('pendientes').innerHTML = data.map(item => `<li>${item.Nombre} - ${item.Fecha}</li>`).join('');
+                });
+            fetch('/completados')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('completados').innerHTML = data.map(item => `<li>${item.Nombre} - ${item.Fecha}</li>`).join('');
+                });
+        }
+        cargarListas();
+    </script>
+</body>
+</html>
