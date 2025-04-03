@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Courier</title>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <h1>Bienvenido al Sistema de Courier</h1>
+  <div id="packages"></div>
+
+  <h2>Enviar ubicación</h2>
+  <input id="trackingNumber" type="text" placeholder="Número de seguimiento">
+  <input id="location" type="text" placeholder="Ubicación">
+  <button onclick="sendLocation()">Enviar Ubicación</button>
+
+  <h2>Enviar mensaje</h2>
+  <input id="message" type="text" placeholder="Escribe un mensaje">
+  <button onclick="sendMessage()">Enviar Mensaje</button>
+
+  <script>
+    const socket = io();
+
+    socket.on('location update', (data) => {
+      console.log('Ubicación actualizada:', data);
+    });
+
+    socket.on('chat message', (message) => {
+      console.log('Nuevo mensaje:', message);
+    });
+
+    function sendLocation() {
+      const trackingNumber = document.getElementById('trackingNumber').value;
+      const location = document.getElementById('location').value;
+      socket.emit('send location', { trackingNumber, location });
+    }
+
+    function sendMessage() {
+      const message = document.getElementById('message').value;
+      socket.emit('send message', message);
+    }
+  </script>
+</body>
+</html>
